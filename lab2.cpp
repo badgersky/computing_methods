@@ -3,8 +3,12 @@
 #include <cmath>
 #include <filesystem>
 
-double func(double x) {
-    return (x * x * x) / (6. * (sinh(x) - x));
+long double func(double x) {
+    if (fabsl(x) < 1e-2) {
+        return 1. / (1. + (x * x / 20. + x * x * x * x / 840. + x * x * x * x * x * x / 60480));
+    } 
+
+    return (x * x * x) / (6. * (sinhl(x) - x));
 }
 
 int main() {
@@ -25,11 +29,13 @@ int main() {
     std::getline(dataf, line);
     std::getline(dataf, line);
 
-    double logx, x, x_exact, err, log_err;
+    long double logx, x, x_exact, err, log_err;
     while(dataf >> logx >> x >> x_exact) {
-        err = fabs((func(x) - x_exact) / x_exact);
-        log_err = log10(fabs(err));
+        err = (func(x) - x_exact) / x_exact;
+        log_err = log10l(fabsl(err));
         
+
+
         resf << logx << " " << log_err << std::endl;
     }
 
