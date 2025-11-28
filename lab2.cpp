@@ -27,7 +27,7 @@ int main() {
 
     double logx, x, x_exact, err, log_err;
     while(dataf >> logx >> x >> x_exact) {
-        err = (fabs(func(x)) - fabs(x_exact)) / fabs(x_exact);
+        err = fabs((func(x) - x_exact) / x_exact);
         log_err = log10(fabs(err));
         
         resf << logx << " " << log_err << std::endl;

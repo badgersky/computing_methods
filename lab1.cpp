@@ -11,7 +11,7 @@ int main() {
     ft1--;
   
     std::cout << "liczba bitów mantysy dla float:                              " << ft1 << std::endl;
-    std::cout << "liczba bitów znaczących dla float:                           " << std::ceil((ft1 * std::log10(2))) << std::endl;
+    std::cout << "liczba cyfr znaczących dla float:                            " << std::ceil((ft1 * std::log10(2))) << std::endl;
     std::cout << "znaleziony epsilon maszynowy dla float:                      " << (x1*2.0f) << std::endl;
     std::cout << "epsilon maszynowy dla float z biblioteki standardowej:       " << std::numeric_limits<float>::epsilon() << std::endl;
 
@@ -25,7 +25,7 @@ int main() {
 
     std::cout << "------------------------------------------------------------------------" << std::endl;
     std::cout << "liczba bitów mantysy dla double:                             " << ft2 << std::endl;
-    std::cout << "liczba bitów znaczących dla double:                          " << std::ceil((ft2 * std::log10(2))) << std::endl;
+    std::cout << "liczba cyfr znaczących dla double:                           " << std::ceil((ft2 * std::log10(2))) << std::endl;
     std::cout << "znaleziony epsilon maszynowy dla double:                     " << (x2*2.0) << std::endl;
     std::cout << "epsilon maszynowy dla double z biblioteki standardowej:      " << std::numeric_limits<double>::epsilon() << std::endl;
 
@@ -39,7 +39,7 @@ int main() {
 
     std::cout << "------------------------------------------------------------------------" << std::endl;
     std::cout << "liczba bitów mantysy dla long double:                        " << ft3 << std::endl;
-    std::cout << "liczba bitów znaczących dla long double:                     " << std::ceil((ft3 * std::log10(2))) << std::endl;
+    std::cout << "liczba cyfr znaczących dla long double:                      " << std::ceil((ft3 * std::log10(2))) << std::endl;
     std::cout << "znaleziony epsilon maszynowy dla long double:                " << (x3*2.0l) << std::endl;
     std::cout << "epsilon maszynowy dla long double z biblioteki standardowej: " << std::numeric_limits<long double>::epsilon() << std::endl;
 }
