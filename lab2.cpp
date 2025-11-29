@@ -34,8 +34,6 @@ int main() {
         err = (func(x) - x_exact) / x_exact;
         log_err = log10l(fabsl(err));
         
-
-
         resf << logx << " " << log_err << std::endl;
     }
 
