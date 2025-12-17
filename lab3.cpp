@@ -5,7 +5,8 @@
 
 using namespace std;
 
-double EPS = 1e-14;
+double EPS1 = 1e-14;
+double EPS2 = 1e-14;
 double N = 100;
 
 double func1(double x) {
@@ -61,9 +62,7 @@ double bisection_method(double a, double b, double(*func)(double)) {
             cout << "Wartość funkcji w xn:        " << fabs(xnv) << endl;
             cout << "Estymator błędu:             " << (fabs(a - b) / 2.) << endl;
 
-            if ((fabs(a - b) / 2.) < EPS) break;
-
-            if (fabs(xnv) < EPS) break;
+            if ((fabs(a - b) / 2.) < EPS1 && fabs(xnv) < EPS2) break;
 
             if (i >= N) throw runtime_error("osiągnięto limit iteracji!");
 
@@ -100,9 +99,7 @@ double secant_method(double a, double b, double(*func)(double)) {
             cout << "Wartość funkcji w xn:        " << fabs(xnv) << endl;
             cout << "Estymator błędu:             " << fabs(x2 - xn) << endl;
 
-            if (fabs(xnv) < EPS) break;
-
-            if (fabs(x2 - xn) < EPS) break;
+            if (fabs(xnv) < EPS1 && fabs(x2 - xn) < EPS2) break;
 
             if (i >= N) throw runtime_error("osiągnięto limit iteracji!");
 
@@ -128,7 +125,7 @@ double newton_method(double a, double b, double(*func)(double), double(*dfunc)(d
             i++;
             x0v1 = func(x0);
             x0v2 = dfunc(x0);
-            if (x0v2 < EPS) throw runtime_error("pochodna z x0 wynosi 0!");
+            if (x0v2 < EPS1) throw runtime_error("pochodna z x0 wynosi 0!");
 
             xn = x0 - x0v1 / x0v2;
             xnv = func(xn);
@@ -139,9 +136,7 @@ double newton_method(double a, double b, double(*func)(double), double(*dfunc)(d
             cout << "Wartość funkcji w xn:        " << fabs(xnv) << endl;
             cout << "Estymator błędu:             " << fabs(x0 - xn) << endl;
 
-            if (fabs(xnv) < EPS) break;
-
-            if (fabs(x0 - xn) < EPS) break;
+            if (fabs(xnv) < EPS1 && fabs(x0 - xn) < EPS2) break;
 
             if (i >= N) throw runtime_error("osiągnięto limit iteracji!");
 
@@ -175,9 +170,7 @@ double picard_method(double a, double b, double(*func)(double), double(*phi_func
             cout << "Wartość funkcji w xn:        " << fabs(xnv) << endl;
             cout << "Estymator błędu:             " << fabs(x0 - xn) << endl;
 
-            if (fabs(xnv) < EPS) break;
-
-            if (fabs(x0 - xn) < EPS) break;
+            if (fabs(xnv) < EPS1 && fabs(x0 - xn) < EPS2) break;
 
             if (i >= N) throw runtime_error("osiągnięto limit iteracji!");
 
