@@ -96,6 +96,7 @@ void decomposition(double A[][N], int indexes[N]) {
             }
         }
         
+        cout << "Element podstawowy: " << p << endl;
         for (int j = i + 1; j < N; j++) {
             w = A[j][i] / p;
             for (int k = i + 1; k < N; k++) {
@@ -107,8 +108,9 @@ void decomposition(double A[][N], int indexes[N]) {
     }
 }
 
-void solve(double A[][N], double b[], int indexes[], double x[]) {
+void solve(double A[][N], double b[], int indexes[]) {
     double y[N];
+    double x[N];
 
     for (int i = 0; i < N; i++) {
         y[i] = b[indexes[i]];
@@ -131,6 +133,5 @@ int main() {
     print_U(A);
     print_L(A);
 
-    double x[N];
-    solve(A, b, indexes, x);
+    solve(A, b, indexes);
 }
