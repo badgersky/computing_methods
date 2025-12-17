@@ -161,7 +161,7 @@ double picard_method(double a, double b, double(*func)(double), double(*phi_func
 
     if (av * bv > 0.) {
         throw runtime_error("funkcja nie spełnia założeń!");
-    } else if (fabs(dphi_func(x0)) < 0) {
+    } else if (fabs(dphi_func(x0)) > 1) {
         throw runtime_error("funkcja nie jest zbieżna");
     } else {
         while (true) {
