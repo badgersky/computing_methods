@@ -5,6 +5,10 @@
 using namespace std;
 
 #define N 5
+#define MAX_IT 40
+
+double EPS1 = 1e-10;
+double EPS2 = 1e-10;
 
 double A[N][N] = {
     {50, 5, 4, 3, 2},
@@ -25,7 +29,7 @@ double o = 0.5;
 void print_matrix(double M[][N]) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            cout << setw(10) << fixed << setprecision(2) << M[i][j] << " ";
+            cout << fixed << setprecision(20) << M[i][j] << " ";
         }
         cout << endl;
     }
@@ -34,9 +38,9 @@ void print_matrix(double M[][N]) {
 
 void print_vector(double V[N]) {
     for (int i = 0; i < N; i++) {
-        cout << setw(10) << fixed << setprecision(2) << V[i] << " ";
+        cout << fixed << setprecision(20) << V[i] << " ";
     }
-    cout << endl;
+    cout << endl << endl;;
 }
 
 void sum_mm(double M1[N][N], double M2[N][N], double R[N][N]) {
@@ -44,6 +48,18 @@ void sum_mm(double M1[N][N], double M2[N][N], double R[N][N]) {
         for (int j = 0; j < N; j++) {
             R[i][j] = M1[i][j] + M2[i][j];
         }
+    }
+}
+
+void sum_vv(double v1[N], double v2[N], double r[N]) {
+    for (int i = 0; i < N; i++) {
+        r[i] = v1[i] + v2[i];
+    }
+}
+
+void sub_vv(double v1[N], double v2[N], double r[N]) {
+    for (int i = 0; i < N; i++) {
+        r[i] = v1[i] - v2[i];
     }
 }
 
@@ -75,6 +91,17 @@ void mult_mv(double B[][N], double v[N], double r[N]) {
     }
 }
 
+double vector_max_norm(double v[N]) {
+    double res = 0.;
+    for (int i = 0; i < N; i++) {
+        if (abs(v[i]) > abs(res)) {
+            res = abs(v[i]);
+        }
+    }
+
+    return res;
+}
+
 void decompose_A() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -90,20 +117,20 @@ void init_J(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
     double mDr[N][N] = {};
     double LU[N][N] = {};
     for (int i = 0; i < N; i++) {
-        Dr[i][i] = 1. / D[i][i];
-        mDr[i][i] = -1. / D[i][i];
+        Dr[i][i] = 1. / D[i][i];  // D^-1
+        mDr[i][i] = -1. / D[i][i];  // -D^-1
     }
     
     sum_mm(L, U, LU);
-    mult_mv(Dr, b, Jc);  // wektor C
-    mult_mm(mDr, LU, Jm);  // macierz M
+    mult_mv(Dr, b, Jc);  // C
+    mult_mm(mDr, LU, Jm);  // M
 
     copy(x0, x0 + N, Jx);
     fill(Jxn, Jxn + N, 0.0);
 }
 
 void init_G(double GL[][N], double GU[][N], double Gx[N], double Gxn[N]) {
-    mult_ms(U, -1., GU);
+    mult_ms(U, -1., GU);  // -U
     sum_mm(L, D, GL);  // L + D
 
     copy(x0, x0 + N, Gx);
@@ -127,21 +154,74 @@ void init_S(double SL[][N], double SU[N][N], double Sx[N], double Sxn[N]) {
     fill(Sxn, Sxn + N, 0.0);
 }
 
-void Jacoby_method(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
-    cout << "Jacoby" << endl;
+bool Jacoby_method(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
+    bool res = false;
+    double tmp1[N] = {};
+    mult_mv(Jm, Jx, tmp1);
+    sum_vv(tmp1, Jc, Jxn);
+
+    // warunki końca iteracji Jacoby
+    double diff[N] = {};
+    double r[N] = {};
+    double tmp2[N] = {};
+    sub_vv(Jxn, Jx, diff);
+    mult_mv(A, Jxn, tmp2);  
+    sub_vv(b, tmp2, r);  
+
+    double norm_diff = vector_max_norm(diff);
+    double norm_r = vector_max_norm(r);
+    if (norm_r < EPS1 && norm_diff < EPS2) {
+        res = true;
+    }
+
+    copy(Jxn, Jxn + N, Jx);
+    fill(Jxn, Jxn + N, 0.);
+    return res;
 }
 
-void Gauss_Seidel_method(double Gm[][N], double Gc[N], double Gx[N], double Gxn[N]) {
-    cout << "Gauss-Seidel" << endl;
+bool Gauss_Seidel_method(double GL[][N], double GU[][N], double Gx[N], double Gxn[N]) {
+    double tmp[N];
+    
+    return true;
 }
 
-void SOR_method(double Sm[][N], double Sc[N], double Sx[N], double Sxn[N]) {
+bool SOR_method(double SL[][N], double SU[][N], double Sx[N], double Sxn[N]) {
     cout << "SOR" << endl;
+    return true;
 }
 
 int main() {
-    double Jm[N][N], GL[N][N], GU[N][N], SL[N][N], SU[N][N];
-    double Jc[N], Jx[N], Gx[N], Sx[N], Jxn[N], Gxn[N], Sxn[N];
+    double Jm[N][N], Jc[N], Jx[N], Jxn[N];  // zmienne metoda Jacobiego
+    double GL[N][N], GU[N][N], Gx[N], Gxn[N];  // zmienne metoda Gaussa-Seidela
+    double SL[N][N], SU[N][N], Sx[N],  Sxn[N];  // zmienne metoda SOR
 
     decompose_A();
+    init_J(Jm, Jc, Jx, Jxn);
+    init_G(GL, GU, Gx, Gxn);
+    init_S(SL, SU, Sx, Sxn);
+
+    // print_matrix(Jm);
+    // print_vector(Jc);
+
+    // print_matrix(GL);
+    // print_matrix(GU);
+
+    // print_matrix(SL);
+    // print_matrix(SU);
+    int i = 0;
+    bool jacoby = false;
+    bool gauss = false;
+    bool sor = false;
+    while (true) {
+        i++;
+
+        jacoby = Jacoby_method(Jm, Jc, Jx, Jxn);
+
+        if (jacoby || i >= MAX_IT) {
+            break;
+        }
+    }
+
+    cout << "wynik po " << i << " iteracji" << endl;
+    print_vector(Jx);
 }
