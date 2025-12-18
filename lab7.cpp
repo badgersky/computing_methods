@@ -7,8 +7,8 @@ using namespace std;
 #define N 5
 #define MAX_IT 40
 
-double EPS1 = 1e-10;
-double EPS2 = 1e-10;
+double EPS1 = 1e-12;
+double EPS2 = 1e-12;
 
 double A[N][N] = {
     {50, 5, 4, 3, 2},
@@ -113,6 +113,7 @@ void decompose_A() {
 }
 
 void init_J(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
+    // inicjalizacja zmiennych do metody Jacobiego
     double Dr[N][N] = {};
     double mDr[N][N] = {};
     double LU[N][N] = {};
@@ -130,6 +131,7 @@ void init_J(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
 }
 
 void init_G(double GL[][N], double GU[][N], double Gx[N], double Gxn[N]) {
+    // inicjalizacja zmiennych do metody Gaussa-Seidela
     mult_ms(U, -1., GU);  // -U
     sum_mm(L, D, GL);  // L + D
 
@@ -138,6 +140,7 @@ void init_G(double GL[][N], double GU[][N], double Gx[N], double Gxn[N]) {
 }
 
 void init_S(double SL[][N], double SU[N][N], double Sx[N], double Sxn[N]) {
+    // inicjalizacja zmiennych do metody SOR
     // L + 1/o * D
     double oD1[N][N] = {};
     mult_ms(D, (1. / o), oD1);
@@ -180,9 +183,38 @@ bool Jacoby_method(double Jm[][N], double Jc[N], double Jx[N], double Jxn[N]) {
 }
 
 bool Gauss_Seidel_method(double GL[][N], double GU[][N], double Gx[N], double Gxn[N]) {
+    bool res = false;
     double tmp[N];
+    double p[N];
+
+    // rozwiazanie ukladu rownan
+    mult_mv(GU, Gx, tmp);
+    sum_vv(tmp, b, p);
+    for (int i = 0; i < N; i++) {
+        double sum = 0.;
+        for (int j = 0; j < i; j++) {
+            sum += GL[i][j] * Gxn[j];
+        }
+        Gxn[i] = (p[i] - sum) / GL[i][i];
+    }
+
+    // warunki konca iteracji Gauss-Seidel
+    double diff[N] = {};
+    double r[N] = {};
+    double tmp2[N] = {};
+    sub_vv(Gxn, Gx, diff);
+    mult_mv(A, Gxn, tmp2);  
+    sub_vv(b, tmp2, r);  
+
+    double norm_diff = vector_max_norm(diff);
+    double norm_r = vector_max_norm(r);
+    if (norm_r < EPS1 && norm_diff < EPS2) {
+        res = true;
+    }
     
-    return true;
+    copy(Gxn, Gxn + N, Gx);
+    fill(Gxn, Gxn + N, 0.);
+    return res;
 }
 
 bool SOR_method(double SL[][N], double SU[][N], double Sx[N], double Sxn[N]) {
@@ -216,12 +248,13 @@ int main() {
         i++;
 
         jacoby = Jacoby_method(Jm, Jc, Jx, Jxn);
+        gauss = Gauss_Seidel_method(GL, GU, Gx, Gxn);
 
-        if (jacoby || i >= MAX_IT) {
+        if (i > MAX_IT || jacoby) {
             break;
         }
     }
-
-    cout << "wynik po " << i << " iteracji" << endl;
+    
+    cout << "gauss " << i << " iteracji" << endl;
     print_vector(Jx);
 }
