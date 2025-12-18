@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iomanip>
+#include <cmath>
 
 using namespace std;
 
@@ -132,6 +133,5 @@ int main() {
     decomposition(A, indexes);
     print_U(A);
     print_L(A);
-
     solve(A, b, indexes);
 }
