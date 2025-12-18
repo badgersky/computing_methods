@@ -7,8 +7,8 @@ using namespace std;
 #define N 5
 #define MAX_IT 60
 
-double EPS_RES = 1e-8;
-double EPS_ERR = 1e-8;
+double EPS_RES = 1e-12;
+double EPS_ERR = 1e-12;
 
 double A[N][N] = {
     {50, 5, 4, 3, 2},
@@ -38,15 +38,15 @@ void print_matrix(double M[][N]) {
 
 void print_vector(double V[N]) {
     for (int i = 0; i < N; i++) {
-        cout << fixed << setprecision(10) << V[i] << " ";
+        cout << fixed << setprecision(15) << V[i] << " ";
     }
 }
 
 void print_info(double v[N], double res, double est, char method) {
     cout << method << " | ";
     print_vector(v);
-    cout << "| " << res;
-    cout << " | " << est;
+    cout << "| " << setw(18)<< res;
+    cout << " | " << setw(18) << est;
     cout << endl;
 }
 
@@ -282,7 +282,7 @@ int main() {
     while (true) {
         i++;
 
-        cout << "----------------------------------------- iteracja " << i << " ------------------------------------------" << endl; 
+        cout << "------------------------------------------------------------- iteracja " << i << " --------------------------------------------------------------" << endl; 
         if (!jacoby) {
             jacoby = Jacoby_method(Jm, Jc, Jx, Jxn);
             jr++;
