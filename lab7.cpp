@@ -306,6 +306,10 @@ int main() {
         }
     }
 
+    cout << "Parametry programu:" << endl;
+    cout << "Dokładność estymatora błędu:      " << EPS_ERR << endl;
+    cout << "Dokładność residuum przybliżenia: " << EPS_RES << endl;
+    cout << "Maksymalna liczba iteracji:       " << MAX_IT << endl;
     cout << "Wyniki końcowe:" << endl;
     cout << "Jacoby       " << " | ";
     print_vector(Jx);
