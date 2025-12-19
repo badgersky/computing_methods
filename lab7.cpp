@@ -244,7 +244,7 @@ bool SOR_method(double SL[][N], double SU[][N], double Sx[N], double Sxn[N]) {
         Sxn[i] = (p[i] - sum) / SL[i][i];
     }
     
-    // warunki konca iteracji Gauss-Seidel
+    // warunki konca iteracji SOR
     double diff[N] = {};
     double r[N] = {};
     double tmp2[N] = {};
