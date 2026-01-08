@@ -8,7 +8,7 @@ err1 = data[:, 1]
 err2 = data[:, 2]
 
 plt.figure()
-plt.suptitle("Błąd metod w zależności od kraku h")
+plt.suptitle("Błąd metod w zależności od kroku h")
 plt.loglog(h, err1, label="Błąd metoda strzałów")
 plt.loglog(h, err2, label="Błąd algorytm Thomasa")
 
