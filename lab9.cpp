@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <fstream>
 
-#define N 1000
+#define N 2000
 #define M 100
 #define EPS1 1e-13
 #define EPS2 1e-13
@@ -74,29 +74,29 @@ void get_exact_solution(double a, double h, double u_exact[], int n) {
     }
 }
 
-void shoot(double p, double h, double u_sh[], double A, double B, double C, int n) {
+void shoot(double a, double p, double h, double u_sh[], double A, double B, double C, int n) {
     u_sh[0] = 2.0;
     u_sh[1] = u_sh[0] + h * p;
 
     for(int i = 2; i < n; i++) {
-        double x = i * h;
+        double x = a + i * h;
         double f = - x*x*x / 2.0;
         u_sh[i] = (f - A * u_sh[i - 2] - B * u_sh[i - 1]) / C;
     }
 }
 
-double shooting_function(double p, double h, double u_sh[], double A, double B, double C, int n) {
-    shoot(p, h, u_sh, A, B, C, n);
+double shooting_function(double a, double p, double h, double u_sh[], double A, double B, double C, int n) {
+    shoot(a, p, h, u_sh, A, B, C, n);
     return u_sh[n - 1] - (-2.0);
 }
 
-void shooting_method(double h, double u_sh[], double A, double B, double C, int n) {
+void shooting_method(double a, double h, double u_sh[], double A, double B, double C, int n) {
     double p1 = -10.0;
     double p2 = 10.0;
     double u_temp[n];
 
-    double f1 = shooting_function(p1, h, u_temp, A, B, C, n);
-    double f2 = shooting_function(p2, h, u_temp, A, B, C, n);
+    double f1 = shooting_function(a, p1, h, u_temp, A, B, C, n);
+    double f2 = shooting_function(a, p2, h, u_temp, A, B, C, n);
 
     if(f1 * f2 > 0) {
         exit(1);
@@ -106,7 +106,7 @@ void shooting_method(double h, double u_sh[], double A, double B, double C, int 
 
     for(int i = 0; i < M; i++) {
         s_star = 0.5 * (p1 + p2);
-        double f_mid = shooting_function(s_star, h, u_sh, A, B, C, n);
+        double f_mid = shooting_function(a, s_star, h, u_sh, A, B, C, n);
 
         if(f_mid * f1 < 0) {
             p2 = s_star;
@@ -121,8 +121,16 @@ void shooting_method(double h, double u_sh[], double A, double B, double C, int 
 }
 
 int main() {
-    for (int n = 10; n <= 1000; n += 10) {
+    ofstream f1("C:\\Users\\szymon\\workbench\\computing_methods\\errors_lab9.txt");
+    ofstream f2("C:\\Users\\szymon\\workbench\\computing_methods\\results_lab9.txt");
+
+    if (!f1.is_open() or !f2.is_open()) {
+        return 1;
+    }
+
+    for (int n = 10; n <= N; n++) {
         double a = 0.;
+        double t_err = 0., s_err = 0.;
         double b = 1.;
         double h = abs(a - b) / (n - 1);
         double A = 1. / (h * h) - 1. / h;
@@ -142,6 +150,22 @@ int main() {
         init(a, h, A, B, C, lower, upper, diag, r, n);
         thomas_algorithm(lower, diag, upper, r, u_thomas, n);
         get_exact_solution(a, h, u_exact, n);
-        shooting_method(h, u_shooting, A, B, C, n);
+        shooting_method(a, h, u_shooting, A, B, C, n);
+
+        double tmp_err_s, tmp_err_t;
+        for (int i = 0; i < n; i++) {
+            tmp_err_s = fabs(u_exact[i] - u_shooting[i]);
+            tmp_err_t = fabs(u_exact[i] - u_thomas[i]);
+            if (tmp_err_s > s_err) s_err = tmp_err_s;
+            if (tmp_err_t > t_err) t_err = tmp_err_t;
+        }
+
+        f1 << setprecision(15) << fixed << h << " " << s_err << " " << t_err << endl;
+
+        if (n == 1000) {
+            for (int i = 0; i < n; i++) {
+                f2 << setprecision(15) << fixed << (a + i * h) << " " << u_shooting[i] << " " << u_thomas[i] << " " << u_exact[i] << endl;
+            }
+        }
     }
 }
