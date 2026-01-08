@@ -4,7 +4,7 @@
 #include <fstream>
 
 #define N 1000
-#define M 69
+#define M 100
 #define EPS1 1e-13
 #define EPS2 1e-13
 
@@ -66,56 +66,57 @@ double get_exact_u(double x) {
     return - r1 * r2 / 64.0;
 }
 
-double bisection_method(double a, double b, double(*func)(double)) {
-    double av, bv, xnv, xn;
-    int i = 0;
-    av = func(a);
-    bv = func(b);
-
-    if (av * bv > 0.) {
-        throw runtime_error("funkcja nie spełnia założeń!");
-    } else {
-        while (true) {
-            i++;
-            xn = (a + b) / 2.;
-            xnv = func(xn);
-
-            cout << endl;
-            cout << "---------------- " << i << "-ta iteracja ----------------" << endl;
-            cout << "Przybliżenie pierwiastka xn: " << xn << endl;
-            cout << "Wartość funkcji w xn:        " << fabs(xnv) << endl;
-            cout << "Estymator błędu:             " << (fabs(a - b) / 2.) << endl;
-
-            if ((fabs(a - b) / 2.) < EPS1 && fabs(xnv) < EPS2) break;
-
-            if (i >= N) throw runtime_error("osiągnięto limit iteracji!");
-
-            if (av * xnv < 0.) {b = xn; bv = xnv;}
-            else {a = xn; av = xnv;}
-        }
-
-        return xn;
-    }
-}
-
-void shooting_method(double a, double h, double u_sh[], double p, double A, double B, double C) {
-    double x, f;
-    
-    u_sh[0] = 2;
-    u_sh[1] = u_sh[0] + h * p;
-
-    for (int i = 2; i < N; i++) {
-        x = a + i * h;
-        f = - x * x * x / 2.;
-        u_sh[i] = (-1. * A * u_sh[i - 2] + -1. * B * u_sh[i - 1] - f) / C;
-    }
-}
-
 void get_exact_solution(double a, double h, double u_exact[]) {
     double x;
     for (int i = 0; i < N; i++) {
         x = a + i * h;
         u_exact[i] = get_exact_u(x);
+    }
+}
+
+void shoot(double p, double h, double u_sh[N], double A, double B, double C) {
+    u_sh[0] = 2.0;
+    u_sh[1] = u_sh[0] + h * p;
+
+    for(int i = 2; i < N; i++) {
+        double x = i * h;
+        double f = - x*x*x / 2.0;
+        u_sh[i] = (f - A * u_sh[i - 2] - B * u_sh[i - 1]) / C;
+    }
+}
+
+double shooting_function(double p, double h, double u_sh[N], double A, double B, double C) {
+    shoot(p, h, u_sh, A, B, C);
+    return u_sh[N-1] - (-2.0);
+}
+
+void shooting_method(double h, double u_sh[N], double A, double B, double C) {
+    double p1 = -10.0;
+    double p2 = 10.0;
+    double u_temp[N];
+
+    double f1 = shooting_function(p1, h, u_temp, A, B, C);
+    double f2 = shooting_function(p2, h, u_temp, A, B, C);
+
+    if(f1 * f2 > 0) {
+        exit(1);
+    }
+
+    double s_star;
+
+    for(int i = 0; i < M; i++) {
+        s_star = 0.5 * (p1 + p2);
+        double f_mid = shooting_function(s_star, h, u_sh, A, B, C);
+
+        if(f_mid * f1 < 0) {
+            p2 = s_star;
+            f2 = f_mid;
+        } else {
+            p1 = s_star;
+            f1 = f_mid;
+        }
+
+        if(fabs(p2 - p1) / 2. < EPS1 && fabs(f_mid) < EPS2) break;
     }
 }
 
@@ -126,6 +127,8 @@ int main() {
     double A = 1. / (h * h) - 1. / h;
     double B = -2. / (h * h) - 4.;
     double C = 1. / (h * h) + 1. / h;
+    double p_final;
+    double p1 = -10., p2 = -9.;
 
     double lower[N - 1];
     double upper[N - 1];
@@ -133,14 +136,14 @@ int main() {
     double r[N];
     double u[N];
     double u_exact[N];
-    double u_sh[N];
+    double u_shooting[N];
 
     init(a, h, A, B, C, lower, upper, diag, r);
     thomas_algorithm(lower, diag, upper, r, u);
     get_exact_solution(a, h, u_exact);
-    shooting_method(a, h, u_sh, 0., A, B, C);
+    shooting_method(h, u_shooting, A, B, C);
 
     for (int i = 0; i < N; i++) {
-        cout << setw(10) << setprecision(12) << fixed << u_sh[i] << "   " << u_exact[i] << "   " << abs(u_exact[i] - u_sh[i]) << endl;
+        cout << setw(10) << setprecision(12) << fixed << u_shooting[i] << "   " << u_exact[i] << "   " << abs(u_exact[i] - u_shooting[i]) << endl;
     }
 }
