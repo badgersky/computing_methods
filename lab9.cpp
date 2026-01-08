@@ -134,16 +134,16 @@ int main() {
     double upper[N - 1];
     double diag[N];
     double r[N];
-    double u[N];
+    double u_thomas[N];
     double u_exact[N];
     double u_shooting[N];
 
     init(a, h, A, B, C, lower, upper, diag, r);
-    thomas_algorithm(lower, diag, upper, r, u);
+    thomas_algorithm(lower, diag, upper, r, u_thomas);
     get_exact_solution(a, h, u_exact);
     shooting_method(h, u_shooting, A, B, C);
 
     for (int i = 0; i < N; i++) {
-        cout << setw(10) << setprecision(12) << fixed << u_shooting[i] << "   " << u_exact[i] << "   " << abs(u_exact[i] - u_shooting[i]) << endl;
+        cout << setw(10) << setprecision(12) << fixed <<  u_shooting[i] << "   " << u_thomas[i] << "   " << u_exact[i] << "   " << abs(u_exact[i] - u_shooting[i]) << "   " << abs(u_exact[i] - u_thomas[i]) << endl;
     }
 }
