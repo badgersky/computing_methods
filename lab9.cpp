@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <fstream>
 
-#define N 200000
+#define N 1000000
 #define M 100
 #define EPS1 1e-13
 #define EPS2 1e-13
@@ -136,7 +136,7 @@ int main() {
         return 1;
     }
 
-    for (int n = 10; n <= N; n += 100) {
+    for (int n = 1000; n <= N; n += 1000) {
         cout << n << endl;
         double a = 0.;
         double t_err = 0., s_err = 0.;
