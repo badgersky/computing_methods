@@ -3,12 +3,23 @@
 #include <iomanip>
 #include <fstream>
 
-#define N 20000
+#define N 200000
 #define M 100
 #define EPS1 1e-13
 #define EPS2 1e-13
 
 using namespace std;
+
+static double lower[N];
+static double upper[N];
+static double diag[N];
+static double r[N];
+static double u_thomas[N];
+static double u_exact[N];
+static double u_shooting[N];
+static double c_star[N];
+static double d_star[N];
+static double u_temp[N];
 
 void init(double a, double h, double A, double B, double C, double lower[], double upper[], double diag[], double r[], int n) {
     double x;
@@ -31,10 +42,7 @@ void init(double a, double h, double A, double B, double C, double lower[], doub
     lower[n - 2] = 0.;
 }
 
-void thomas_algorithm(double lower[], double diag[], double upper[], double r[], double x[], int n) {
-    double c_star[n - 1];
-    double d_star[n];
-
+void thomas_algorithm(double lower[], double diag[], double upper[], double r[], double x[], int n, double c_star[], double d_star[]) {
     c_star[0] = upper[0] / diag[0];
     d_star[0] = r[0] / diag[0];
 
@@ -90,10 +98,10 @@ double shooting_function(double a, double p, double h, double u_sh[], double A, 
     return u_sh[n - 1] - (-2.0);
 }
 
-void shooting_method(double a, double h, double u_sh[], double A, double B, double C, int n) {
+void shooting_method(double a, double h, double u_sh[], double A, double B, double C, int n, double u_temp[]) {
     double p1 = -10.0;
     double p2 = 10.0;
-    double u_temp[n];
+
 
     double f1 = shooting_function(a, p1, h, u_temp, A, B, C, n);
     double f2 = shooting_function(a, p2, h, u_temp, A, B, C, n);
@@ -128,7 +136,8 @@ int main() {
         return 1;
     }
 
-    for (int n = 10; n <= N; n += 10) {
+    for (int n = 10; n <= N; n += 100) {
+        cout << n << endl;
         double a = 0.;
         double t_err = 0., s_err = 0.;
         double b = 1.;
@@ -139,18 +148,21 @@ int main() {
         double p_final;
         double p1 = -10., p2 = -9.;
 
-        double lower[n - 1];
-        double upper[n - 1];
-        double diag[n];
-        double r[n];
-        double u_thomas[n];
-        double u_exact[n];
-        double u_shooting[n];
+        // double lower[n - 1];
+        // double upper[n - 1];
+        // double diag[n];
+        // double r[n];
+        // double u_thomas[n];
+        // double u_exact[n];
+        // double u_shooting[n];
+        // double c_star[n - 1];
+        // double d_star[n];
+        // double u_temp[n];
 
         init(a, h, A, B, C, lower, upper, diag, r, n);
-        thomas_algorithm(lower, diag, upper, r, u_thomas, n);
+        thomas_algorithm(lower, diag, upper, r, u_thomas, n, c_star, d_star);
         get_exact_solution(a, h, u_exact, n);
-        shooting_method(a, h, u_shooting, A, B, C, n);
+        shooting_method(a, h, u_shooting, A, B, C, n, u_temp);
 
         double tmp_err_s, tmp_err_t;
         for (int i = 0; i < n; i++) {
@@ -162,7 +174,7 @@ int main() {
 
         f1 << setprecision(15) << fixed << h << " " << s_err << " " << t_err << endl;
 
-        if (n == 1000) {
+        if (n == N) {
             for (int i = 0; i < n; i++) {
                 f2 << setprecision(15) << fixed << (a + i * h) << " " << u_shooting[i] << " " << u_thomas[i] << " " << u_exact[i] << endl;
             }
