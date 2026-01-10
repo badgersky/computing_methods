@@ -55,11 +55,11 @@ int main() {
             y_e = exact(t);
             
             if (n == 1000) {
-                f1 << setw(18) << setprecision(15) << fixed << y1 << "\t" << y2 << "\t" << y3 << "\t" << y_e << endl;
+                f1 << setw(18) << setprecision(15) << fixed << t << "\t" << y1 << "\t" << y2 << "\t" << y3 << "\t" << y_e << endl;
             }
 
             if (n == 10) {
-                f3 << setw(18) << setprecision(15) << fixed << y1 << "\t" << y_e << endl;
+                f3 << setw(18) << setprecision(15) << fixed << t << "\t" << y1 << "\t" << y_e << endl;
             }
 
             y_bme = BME(t, y1, h);
