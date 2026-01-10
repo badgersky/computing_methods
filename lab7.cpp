@@ -80,7 +80,7 @@ void mult_mm(double B1[][N], double B2[][N], double R[][N]) {
         }
     }
 }
-
+ 
 void mult_ms(double B1[N][N], double s, double R[N][N]) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {

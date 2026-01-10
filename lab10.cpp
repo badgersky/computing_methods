@@ -35,6 +35,7 @@ int main() {
     ofstream f3("C:\\Users\\szymon\\workbench\\computing_methods\\bme_unstable_lab10.txt");
 
     for (int n = 10; n <= N; n++) {
+        cout << n << endl;
         double t_s = 0.;
         double t_e = 1.;
         double y = 2.;
