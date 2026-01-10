@@ -55,7 +55,7 @@ int main() {
             t = t_s + i * h;
             y_e = exact(t);
             
-            if (n == 1000) {
+            if (n == 100) {
                 f1 << setw(18) << setprecision(15) << fixed << t << "\t" << y1 << "\t" << y2 << "\t" << y3 << "\t" << y_e << endl;
             }
 

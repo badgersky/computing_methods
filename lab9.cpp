@@ -102,7 +102,6 @@ void shooting_method(double a, double h, double u_sh[], double A, double B, doub
     double p1 = -10.0;
     double p2 = 10.0;
 
-
     double f1 = shooting_function(a, p1, h, u_temp, A, B, C, n);
     double f2 = shooting_function(a, p2, h, u_temp, A, B, C, n);
 
