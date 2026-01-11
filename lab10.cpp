@@ -33,6 +33,7 @@ int main() {
     ofstream f1("C:\\Users\\szymon\\workbench\\computing_methods\\results_lab10.txt");
     ofstream f2("C:\\Users\\szymon\\workbench\\computing_methods\\errors_lab10.txt");
     ofstream f3("C:\\Users\\szymon\\workbench\\computing_methods\\bme_unstable_lab10.txt");
+    ofstream f4("C:\\Users\\szymon\\workbench\\computing_methods\\bme_almost_stable_lab10.txt");
 
     for (int n = 10; n <= N; n++) {
         cout << n << endl;
@@ -63,6 +64,10 @@ int main() {
                 f3 << setw(18) << setprecision(15) << fixed << t << "\t" << y1 << "\t" << y_e << endl;
             }
 
+            if (n == 20) {
+                f4 << setw(18) << setprecision(15) << fixed << t << "\t" << y1 << "\t" << y_e << endl;
+            }
+
             y_bme = BME(t, y1, h);
             y_pme = PME(t, y2, h);
             y_pmt = PMT(t, y3, h);
@@ -80,4 +85,5 @@ int main() {
     f1.close();
     f2.close();
     f3.close();
+    f4.close();
 }
